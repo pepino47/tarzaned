@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tarzaned Bingo</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --card: #f7f7f7;
+      --accent: #06b6d4;
+      --text: #111111;
+      --muted: #555555;
+      --tile: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .app { width: 100%; max-width: 1100px; }
+    header { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }
+    h1 { font-size: 24px; margin: 0; }
+    .controls { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    select, input[type=checkbox] {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #cccccc;
+      background: #f5f5f5;
+      color: var(--text);
+    }
+    button {
+      background: var(--accent);
+      border: none;
+      color: #ffffff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .card {
+      background: var(--card);
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+    }
+    .board {
+  margin-top: 18px;
+  display: grid;
+  gap: 6px;
+  width: fit-content;         /* shrink to grid size */
+  margin-left: auto;          /* center horizontally */
+  margin-right: auto;
+}
+    .tile {
+  background: var(--tile);
+  border-radius: 8px;
+  aspect-ratio: 1.25 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 4px;
+  border: 2px solid #dddddd;
+  overflow-wrap: anywhere;
+}
+    .tile.marked {
+      background: #06b6d4;
+      color: #ffffff;
+      text-decoration: line-through;
+    }
+    .meta { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+    .small { font-size: 13px; color: var(--muted); }
+    .actions { display: flex; gap: 8px; margin-left: auto; }
+    .download {
+      background: #eaeaea;
+      border: 1px solid #cccccc;
+      padding: 8px;
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Tarzaned Bingo</h1>
+        <div class="small">Auto-generate bingo boards with common Tarzaned streamer moments.</div>
+      </div>
+
+      <div class="controls">
+        <label class="small">Size</label>
+        <select id="sizeSelect">
+          <option value="5" selected>5 × 5</option>
+          <option value="6">6 × 6</option>
+          <option value="7">7 × 7</option>
+        </select>
+        <label class="small"><input type="checkbox" id="freeSpace" checked/> Center FREE</label>
+        <button id="generateBtn">Generate</button>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="meta">
+        <div class="small">Tip: click tiles to mark them. Use Download to save the board as an image.</div>
+        <div class="actions">
+          <button id="shuffleBtn">Shuffle Tiles</button>
+          <button id="clearMarks">Clear Marks</button>
+          <button id="downloadBtn" class="download">Download Image</button>
+        </div>
+      </div>
+
+      <div id="boardContainer" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+<script>
+// Tiles list unchanged
+const tilesSource = [
+  "INTING ON PURPOSE (Rage)",
+  "Channel mentions 'smurf'",
+  "Double smite steal",
+  "Says 'it's fine' after losing teamfight",
+  "Blames support for loss",
+  "Perfect kiting play",
+  "First blood by enemy jungle",
+  "Flash in for all-in",
+  "Buys Control Ward at weird time",
+  "Misses key skillshot",
+  "Tower dive succeeded",
+  "Champion insta-lock",
+  "Says 'one more game'",
+  "Says 'GG easy'",
+  "Full build from early kill",
+  "Pentakill (or penta attempt)",
+  "Lane swap shenanigans",
+  "Surrenders early",
+  "Spams ping excessively",
+  "Perfect 1v2 outplay",
+  "Roam to solo lane and win",
+  "Jukes enemy jungle",
+  "Level 1 invade",
+  "Intense tilting moment",
+  "Explains build mid-game",
+  "Fails 50/50 skill check",
+  "Gank bot and get triple",
+  "Outsmarts enemy team",
+  "Says 'imu' or chat phrase",
+  "Toxic chat moment",
+  "Low HP outplay",
+  "Sends chat clip to subreddit",
+  "Critiques teammates' itemization",
+  "100-0 combo",
+  "Backdoor base attempt",
+  "Buys Boots first",
+  "AFK or disconnect moment",
+  "Shows insane mechanics",
+  "Diving fountain kill",
+  "Edgy alt account play",
+  "Secret smite timing",
+  "Sends mini rant about meta",
+  "Says 'I can carry this'",
+  "Heals/potions clutch play",
+  "Buys wrong item (oops)",
+  "Baits Baron/Dragon",
+  "Invisible brush play (ward trick)",
+  "Perfect objective steal",
+  "Long death recap rant",
+  "Plays off-meta champion",
+  "Gets solo killed by lane opponent",
+  "Solo Baron (or attempts)",
+  "Says 'we int' jokingly",
+  "Teammate steals kill",
+  "Clutches 1 HP survive",
+  "Wins 1v3 teamfight",
+  "Uses emote spam",
+  "Claims to be challenger",
+  "Shows frag montage clip",
+  "Complains about matchmaking",
+  "Says 'I'll carry' then dies",
+  "Random alt-tab moment",
+  "Plays jungle top or weird role",
+  "Repeats same pick twice",
+  "Says meta is trash",
+  "Pinged in the wrong direction",
+  "Unintentional QSS timing",
+  "Repeats old joke",
+  "Shouts after big play",
+  "Drop in LP after tilt",
+  "Mentions coaching or lessons",
+  "Random gifted sub shoutout"
+];
+
+function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+
+function generateBoard(size, withFree){
+  const count = size * size;
+  const pool = [...tilesSource];
+  while(pool.length < count) pool.push(...tilesSource);
+  shuffleArray(pool);
+  const selected = pool.slice(0, count);
+  if(withFree && size%2===1){ selected[Math.floor(count/2)] = "FREE — Tarzaned Moment"; }
+  return selected;
+}
+
+function renderBoard(size, tiles){
+  const container = document.getElementById('boardContainer');
+  container.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'board';
+  grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+
+  tiles.forEach(t=>{
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.innerText = t;
+    tile.title = t;
+    tile.addEventListener('click', ()=> tile.classList.toggle('marked'));
+    grid.appendChild(tile);
+  });
+  container.appendChild(grid);
+}
+
+// NEW: Download as image
+function downloadImage(){
+  const board = document.getElementById('boardContainer');
+  html2canvas(board).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'tarzaned-bingo.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+
+function init(){
+  const sizeSelect = document.getElementById('sizeSelect');
+  const freeSpace = document.getElementById('freeSpace');
+  const gen = document.getElementById('generateBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const clearMarks = document.getElementById('clearMarks');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  function make(){ renderBoard(parseInt(sizeSelect.value), generateBoard(parseInt(sizeSelect.value), freeSpace.checked)); }
+
+  gen.addEventListener('click', make);
+  shuffleBtn.addEventListener('click', make);
+  clearMarks.addEventListener('click', ()=> document.querySelectorAll('.tile.marked').forEach(el=>el.classList.remove('marked')));
+  downloadBtn.addEventListener('click', downloadImage);
+
+  make();
+}
+
+// Load html2canvas
+const script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+script.onload = init;
+document.body.appendChild(script);
+</script>
+</body>
+</html>
