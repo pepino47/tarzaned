@@ -15,37 +15,100 @@
       --board-size: 5;
     }
     * { box-sizing: border-box; }
-    body { margin:0; font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial; color:var(--text); background:var(--bg); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+    body {
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;
+      color:var(--text);
+      background:var(--bg);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
     .app { width:100%; max-width:1100px; }
     header { display:flex; gap:16px; align-items:center; margin-bottom:18px; }
     h1{margin:0; font-size:24px; }
     .controls{margin-left:auto; display:flex; gap:8px; align-items:center; }
-    select,input[type=checkbox]{ padding:6px 8px; border-radius:8px; border:1px solid #ccc; background:#f5f5f5; color:var(--text);}    
-    button{ background:var(--accent); border:none; color:#fff; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:500; }
-    .card{ background:var(--card); padding:18px; border-radius:14px; box-shadow:0 6px 30px rgba(0,0,0,0.08);}    
-    .board{ margin-top:18px; display:grid; gap:6px; width:fit-content; margin-left:auto; margin-right:auto; }
-    .tile{ background:var(--tile); border-radius:8px; aspect-ratio:1.25/1; display:flex; align-items:center; justify-content:center; text-align:center; cursor:pointer; user-select:none; font-weight:400; padding:4px; border:2px solid #ddd; overflow-wrap:anywhere; }
-    .tile.marked{ background:var(--accent); color:white; text-decoration:line-through; }
-    .meta{ display:flex; gap:10px; margin-top:12px; align-items:center; }
+    select,input[type=checkbox]{
+      padding:6px 8px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      background:#f5f5f5;
+      color:var(--text);
+    }    
+    button{
+      background:var(--accent);
+      border:none;
+      color:#fff;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:500;
+    }
+    .card{
+      background:var(--card);
+      padding:18px;
+      border-radius:14px;
+      box-shadow:0 6px 30px rgba(0,0,0,0.08);
+    }    
+    .board{ 
+      margin-top:18px; 
+      display:grid; 
+      gap:6px; 
+      width:fit-content; 
+      margin-left:auto; 
+      margin-right:auto; 
+    }
+    .tile{
+      background:var(--tile);
+      border-radius:8px;
+      aspect-ratio:1.25/1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+      font-weight:400;
+      padding:4px;
+      border:2px solid #ddd;
+      overflow-wrap:anywhere;
+    }
+    .tile.marked{
+      background:var(--accent);
+      color:white;
+      text-decoration:line-through;
+    }
+    .meta{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+      align-items:center;
+    }
     .small{ font-size:13px; color:var(--muted);}    
     .actions{ display:flex; gap:8px; margin-left:auto;}    
-    .download{ background:#eaeaea; border:1px solid #ccc; padding:8px; border-radius:8px; color:var(--text); cursor:pointer;}    
+    .download{
+      background:#eaeaea;
+      border:1px solid #ccc;
+      padding:8px;
+      border-radius:8px;
+      color:var(--text);
+      cursor:pointer;
+    }    
 
-    /* responsive scaling based on HEIGHT */
+    /* Responsive tile scaling */
     .tile{
       width: calc((70vmin / var(--board-size)) * 1.25);
       height: calc(70vmin / var(--board-size));
     }
 
     @media (max-aspect-ratio: 1/1) {
-      /* If screen is tall (like phones), scale by viewport HEIGHT instead */
       .tile{
         width: calc((70vh / var(--board-size)) * 1.25);
         height: calc(70vh / var(--board-size));
       }
     }
-
-    .tile{ width:calc((70vmin / var(--board-size)) * 1.25); height:calc(70vmin / var(--board-size)); }
   </style>
 </head>
 <body>
@@ -63,7 +126,9 @@
       <option value="6">6 × 6</option>
       <option value="7">7 × 7</option>
     </select>
-    <label class="small"><input type="checkbox" id="freeSpace" checked> Center FREE</label>
+    <label class="small">
+      <input type="checkbox" id="freeSpace" checked> Center FREE
+    </label>
     <button id="generateBtn">Generate</button>
   </div>
 </header>
@@ -87,7 +152,12 @@ const tilesSource = [
 "INTING ON PURPOSE (Rage)","Channel mentions 'smurf'","Double smite steal","Says 'it's fine' after losing teamfight","Blames support for loss","Perfect kiting play","First blood by enemy jungle","Flash in for all-in","Buys Control Ward at weird time","Misses key skillshot","Tower dive succeeded","Champion insta-lock","Says 'one more game'","Says 'GG easy'","Full build from early kill","Pentakill (or penta attempt)","Lane swap shenanigans","Surrenders early","Spams ping excessively","Perfect 1v2 outplay","Roam to solo lane and win","Jukes enemy jungle","Level 1 invade","Intense tilting moment","Explains build mid-game","Fails 50/50 skill check","Gank bot and get triple","Outsmarts enemy team","Says 'imu' or chat phrase","Toxic chat moment","Low HP outplay","Sends chat clip to subreddit","Critiques teammates' itemization","100-0 combo","Backdoor base attempt","Buys Boots first","AFK or disconnect moment","Shows insane mechanics","Diving fountain kill","Edgy alt account play","Secret smite timing","Sends mini rant about meta","Says 'I can carry this'","Heals/potions clutch play","Buys wrong item (oops)","Baits Baron/Dragon","Invisible brush play (ward trick)","Perfect objective steal","Long death recap rant","Plays off-meta champion","Gets solo killed by lane opponent","Solo Baron (or attempts)","Says 'we int' jokingly","Teammate steals kill","Clutches 1 HP survive","Wins 1v3 teamfight","Uses emote spam","Claims to be challenger","Shows frag montage clip","Complains about matchmaking","Says 'I'll carry' then dies","Random alt-tab moment","Plays jungle top or weird role","Repeats same pick twice","Says meta is trash","Pinged in the wrong direction","Unintentional QSS timing","Repeats old joke","Shouts after big play","Drop in LP after tilt","Mentions coaching or lessons","Random gifted sub shoutout"
 ];
 
-function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }}
+function shuffleArray(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+}
 
 function generateBoard(size, withFree){
   const count=size*size;
@@ -101,8 +171,10 @@ function generateBoard(size, withFree){
 
 function renderBoard(size, tiles){
   document.documentElement.style.setProperty('--board-size', size);
+
   const container=document.getElementById('boardContainer');
   container.innerHTML='';
+
   const grid=document.createElement('div');
   grid.className='board';
   grid.style.gridTemplateColumns=`repeat(${size}, auto)`;
@@ -110,11 +182,14 @@ function renderBoard(size, tiles){
   function checkBingo(){
     const cells=[...document.querySelectorAll('.tile')].map(t=>t.classList.contains('marked'));
     const lines=[];
+
     for(let r=0;r<size;r++) lines.push(cells.slice(r*size,(r+1)*size));
     for(let c=0;c<size;c++) lines.push(Array.from({length:size},(_,i)=>cells[i*size+c]));
+
     lines.push(Array.from({length:size},(_,i)=>cells[i*size+i]));
     lines.push(Array.from({length:size},(_,i)=>cells[i*size+(size-1-i)]));
-    if(lines.some(line=>line.every(v=>v))){
+
+    if(lines.some(line=>line.every(Boolean))){
       document.getElementById('bingoSound').play();
       const p=document.getElementById('bingoPopup');
       p.style.display='flex';
@@ -122,23 +197,22 @@ function renderBoard(size, tiles){
     }
   }
 
-  tiles.forEach(text=>{(size, tiles){
-  document.documentElement.style.setProperty('--board-size', size);
-  const container=document.getElementById('boardContainer');
-  container.innerHTML='';
-  const grid=document.createElement('div');
-  grid.className='board';
-  grid.style.gridTemplateColumns=`repeat(${size}, auto)`;
-
   tiles.forEach(text=>{
     const tile=document.createElement('div');
     tile.className='tile';
     tile.innerText=text;
+
     const base=22;
     tile.style.fontSize=Math.max(10, base - text.length*0.3) + 'px';
-    tile.addEventListener('click', ()=> tile.classList.toggle('marked'));
+
+    tile.addEventListener('click',()=>{
+      tile.classList.toggle('marked');
+      checkBingo();
+    });
+
     grid.appendChild(tile);
   });
+
   container.appendChild(grid);
 }
 
@@ -159,11 +233,15 @@ function init(){
   const clearMarks=document.getElementById('clearMarks');
   const downloadBtn=document.getElementById('downloadBtn');
 
-  function make(){ renderBoard(parseInt(sizeSelect.value), generateBoard(parseInt(sizeSelect.value), freeSpace.checked)); }
+  function make(){
+    renderBoard(parseInt(sizeSelect.value), generateBoard(parseInt(sizeSelect.value), freeSpace.checked));
+  }
 
   gen.addEventListener('click', make);
   shuffleBtn.addEventListener('click', make);
-  clearMarks.addEventListener('click', ()=> document.querySelectorAll('.tile.marked').forEach(el=>el.classList.remove('marked')));
+  clearMarks.addEventListener('click', ()=> {
+    document.querySelectorAll('.tile.marked').forEach(el=>el.classList.remove('marked'));
+  });
   downloadBtn.addEventListener('click', downloadImage);
 
   make();
@@ -174,9 +252,13 @@ script.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.
 script.onload=init;
 document.body.appendChild(script);
 </script>
+
 <audio id="bingoSound" src="bingo_chime.wav" preload="auto"></audio>
-<div id="bingoPopup" style="position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:9999;">
-  <img src="da5309a8-d82a-488d-8969-74b6057b049c.png" style="max-width:80%; border-radius:12px; box-shadow:0 0 20px #000;">
+
+<div id="bingoPopup"
+     style="position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:9999;">
+  <img src="da5309a8-d82a-488d-8969-74b6057b049c.png"
+       style="max-width:80%; border-radius:12px; box-shadow:0 0 20px #000;">
 </div>
 </body>
 </html>
